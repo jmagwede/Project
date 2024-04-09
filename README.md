@@ -1,4 +1,4 @@
-# {{project_name}}
+# Acoustic loggers for leak detection
 
 ## Project description
 
@@ -7,9 +7,14 @@
 
 ## Team Members
 
-- Team Member Name 1
-- Team Member Name 2
-- ...
+- Percy Mmutle
+- Ndivhuho Magwede
+- Victoria Chukwuno Chinenye
+- Aphiwe Maphumulo
+- Ntsako Rikhotso
+- Boitumelo Lefophana
+- Lesego Maponyane
+- Tonia Omonayin
 
 ## Environment
 
