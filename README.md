@@ -1,9 +1,11 @@
-# Acoustic loggers for leak detection
+# Acoustic Loggers For Leak Detection
 
 ## Project description
 
-- *Include a short paragraph about the project and the code artefacts in this project.*
-- *Provide any relevant external links, e.g. to Notion, your S3 bucket, etc.*
+- Water distribution networks play a crucial role in ensuring clean and safe drinking water is delivered to consumers.
+- Leaks in the pipes of these networks lead to significant loss of water. Not only are these leaks wasteful but they also result in large fines for water utilities.
+- In order to mitigate wastage, acoustic loggers have been attached to water pipes and record the sound profile in each pipe at night. These recordings can then be used to determine whether there is a leak present. 
+- The goal of this project is to produce a model which can classify each of these recordings as ‘leak’ or ‘no leak’.- *Provide any relevant external links, e.g. to Notion, your S3 bucket, etc.*
 
 ## Team Members
 
