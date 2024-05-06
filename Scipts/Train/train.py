@@ -10,7 +10,7 @@ from cnn import CNNNetwork
 
 s3 = boto3.client('s3')
 BUCKET = '2307-01-acoustic-loggers-for-leak-detection-a'
-object_key = 'Metadata_Audio_Connected/Connected_data.xlsx'
+object_key = 'Development Layer/train_data.xlsx'
 
 response = s3.get_object(Bucket=BUCKET, Key=object_key)
 excel_data = response['Body'].read()
@@ -18,8 +18,8 @@ excel_data = response['Body'].read()
 s3_location = BytesIO(excel_data)
     
 
-BATCH_SIZE = 128
-EPOCHS = 2
+BATCH_SIZE = 5
+EPOCHS = 1
 LEARNING_RATE = 0.001
 
 ANNOTATIONS_FILE = s3_location
@@ -96,5 +96,5 @@ if __name__ == "__main__":
     train(cnn, train_dataloader, loss_fn, optimiser, device, EPOCHS)
 
     # save model
-    torch.save(cnn.state_dict(), "feedforwardnet.pth")
+    torch.save(cnn.state_dict(), "NeuralNetwork.pth")
     print("Trained feed forward net saved at feedforwardnet.pth")
