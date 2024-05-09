@@ -97,4 +97,4 @@ if __name__ == "__main__":
 
     # save model
     torch.save(cnn.state_dict(), "NeuralNetwork.pth")
-    print("Trained feed forward net saved at feedforwardnet.pth")
+    print("Trained Neural Network net saved at NeuralNetwork.pth")

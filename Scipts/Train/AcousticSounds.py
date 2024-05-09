@@ -121,4 +121,3 @@ if __name__ == "__main__":
     print(f"There are {len(usd)} samples in the dataset.")
     signal, label = usd[0]
             
-    

@@ -58,11 +58,14 @@ if __name__ == "__main__":
                             BUCKET)
 
 
-    # get a sample from the urban sound dataset for inference
+    # get a sample from the acoustic sound dataset for inference
     input, target = usd[0][0], usd[0][1] # [batch size, num_channels, fr, time]
     input.unsqueeze_(0)
 
     # make an inference
+    output = {'Predicted': ['0 is No_Leak'], 'Expected': ['1 is Leak']}
     predicted, expected = predict(cnn, input, target,
                                   class_mapping)
-    print(f"Predicted: '{predicted}', expected: '{expected}'")
+
+    print(f"Predicted: '{predicted}', expected: '{expected}', input: '{input}'")
+    
