@@ -1,14 +1,17 @@
 import os
 
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
 import pandas as pd
 import torchaudio
+from torchvision import datasets
+from torchvision.datasets import VisionDataset
 import boto3
 import io
 from io import BytesIO
 
-class AcousticSoundsData(Dataset):
+
+class AcousticSoundsData(VisionDataset):
 
     def __init__(self,
                  annotations_file,
@@ -83,7 +86,7 @@ if __name__ == "__main__":
     
     s3 = boto3.client('s3')
     BUCKET = '2307-01-acoustic-loggers-for-leak-detection-a'
-    object_key = 'Metadata_Audio_Connected/train_data.xlsx'
+    object_key = 'Development Layer/train_data.xlsx'
 
     response = s3.get_object(Bucket=BUCKET, Key=object_key)
     excel_data = response['Body'].read()
@@ -118,4 +121,3 @@ if __name__ == "__main__":
     print(f"There are {len(usd)} samples in the dataset.")
     signal, label = usd[0]
             
-    
