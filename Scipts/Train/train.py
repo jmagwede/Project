@@ -19,7 +19,7 @@ s3_location = BytesIO(excel_data)
     
 
 BATCH_SIZE = 5
-EPOCHS = 1
+EPOCHS = 4
 LEARNING_RATE = 0.001
 
 ANNOTATIONS_FILE = s3_location
