@@ -9,8 +9,8 @@ import boto3
 
 
 class_mapping = [
-    "1",
-    "0"
+    "0",
+    "1"
 ]
 
 s3 = boto3.client('s3')
@@ -61,11 +61,15 @@ if __name__ == "__main__":
     # get a sample from the acoustic sound dataset for inference
     input, target = usd[0][0], usd[0][1] # [batch size, num_channels, fr, time]
     input.unsqueeze_(0)
-
-    # make an inference
-    output = {'Predicted': ['0 is No_Leak'], 'Expected': ['1 is Leak']}
-    predicted, expected = predict(cnn, input, target,
+    predicted_list = []
+    expected_list = []
+    for i in range(len(usd)):
+        input, target = usd[i][0], usd[i][1]
+        input.unsqueeze_(0)
+        predicted, expected = predict(cnn, input, target,
                                   class_mapping)
+        predicted_list = predicted_list + [predicted]
+        expected_list = expected_list + [expected]
 
-    print(f"Predicted: '{predicted}', expected: '{expected}', input: '{input}'")
+    print(f"Predicted: '{predicted_list}', expected: '{expected_list}'")
     
