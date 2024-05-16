@@ -7,15 +7,53 @@ import os
 import torch
 import torchaudio
 from torchaudio.transforms import MelSpectrogram
-from AcousticSounds import AcousticSoundsData
+from AppProcessor import AcousticSoundsData
 from cnn import CNNNetwork
 import io
+import boto3
 
 
 class_mapping = [
     "Not Leaking",
     "Leaking"
 ]
+
+def upload_to_s3(file_content, bucket_name, folder_name, file_name):
+    s3 = boto3.client('s3')
+    file_path = os.path.join(folder_name, file_name)
+    try:
+        s3.upload_fileobj(io.BytesIO(file_content), bucket_name, file_path)
+        return True, f"File uploaded successfully to {bucket_name}/{file_path}"
+    except Exception as e:
+        return False, f"Error uploading file to S3: {e}"
+    
+
+def download_from_s3(bucket_name, folder_name):
+    
+    aws_access_key_id = 'AKIATNJHRXAPQBHVQARV'
+    aws_secret_access_key = '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'
+    region_name = 'eu-west-1'
+
+
+    s3 = boto3.client('s3', 
+                    aws_access_key_id=aws_access_key_id, 
+                    aws_secret_access_key=aws_secret_access_key, 
+                    region_name=region_name)
+    
+    try:
+        response = s3.list_objects_v2(Bucket=bucket_name, Prefix=f"{folder_name}/")
+        if 'Contents' in response:
+            file_name = response['Contents'][0]['Key'].split('/')[-1]
+            response = s3.get_object(Bucket=bucket_name, Key=f"{folder_name}/{file_name}")
+            key = f"{folder_name}/{file_name}"
+            return key
+        else:
+            print("No objects found in the specified folder.")
+            return None
+    except Exception as e:
+        print(f"Error downloading file from S3: {e}")
+        return None
+    
 
 def predict(model, input, class_mapping):
     model.eval()
@@ -41,14 +79,42 @@ def main():
             st.audio(uploaded_file, format='audio/ogg', start_time=0)
             st.success("Audio file uploaded successfully!")
             
-            
+            bucket_name = "2307-01-acoustic-loggers-for-leak-detection-a"
+            folder_name = "s3://2307-01-acoustic-loggers-for-leak-detection-a/App_Uploaded_Audios/"
+
+                # Get the filename and content of the uploaded file
+            file_name = uploaded_file.name
+            file_content = uploaded_file.getvalue()
+
+            # Upload the file to S3
+            success, message = upload_to_s3(file_content, bucket_name, folder_name, file_name)
+            if success:
+                st.success(message)
+            else:
+                st.error(message)
 
     elif selected_tab == "Feedback":
-        if uploaded_file is not None:
+        
             st.subheader("Audio Feedback")
             
-            audio_tensor, _ = torchaudio.load(uploaded_file)
-            acoustic_data = AcousticSoundsData(audio_tensor,
+            bucket_name = "2307-01-acoustic-loggers-for-leak-detection-a"
+            folder_name = "App_Uploaded_Audios"
+
+            # Download the audio file from S3
+            key = download_from_s3(bucket_name, folder_name)
+            if key is None:
+                print("Error: Failed to download audio file from S3.")
+                return
+            
+            s3 = boto3.client('s3')
+            
+            audio_data_io = io.BytesIO()
+            
+            s3.download_fileobj(bucket_name, key, audio_data_io)
+            
+            audio_data_io.seek(0)
+            
+            acoustic_data = AcousticSoundsData(audio_data_io,
                                                transformation=MelSpectrogram(sample_rate=2250,
                                                                             n_fft=1024,
                                                                             hop_length=512,
@@ -59,7 +125,7 @@ def main():
             
             # Process the audio using the AcousticSoundsData class
 
-            input,= acoustic_data[0][0] # [batch size, num_channels, fr, time]
+            input = acoustic_data[0][0] # [batch size, num_channels, fr, time]
             input.unsqueeze_(0)
             
             cnn = CNNNetwork()
@@ -72,7 +138,7 @@ def main():
 
 
     elif selected_tab == "Download Info":
-        if uploaded_file is not None:
+        
             st.subheader("Download Audio Information")
             leak_status = predicted
 
