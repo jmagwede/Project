@@ -9,12 +9,13 @@ import boto3
 
 
 class_mapping = [
-    "0",
-    "1"
+    'Non_leak',
+    'leak'
 ]
 
 s3 = boto3.client('s3')
 BUCKET = '2307-01-acoustic-loggers-for-leak-detection-a'
+#object_key = 'Development Layer/validation_data.xlsx'
 object_key = 'Development Layer/validation_data.xlsx'
 
 response = s3.get_object(Bucket=BUCKET, Key=object_key)
@@ -38,7 +39,7 @@ def predict(model, input, target, class_mapping):
 if __name__ == "__main__":
     # load back the model
     cnn = CNNNetwork()
-    state_dict = torch.load("NeuralNetwork.pth")
+    state_dict = torch.load("500_Audio_Nn.pth")
     cnn.load_state_dict(state_dict)
 
     # load urban sound dataset dataset
@@ -59,8 +60,8 @@ if __name__ == "__main__":
 
 
     # get a sample from the acoustic sound dataset for inference
-    input, target = usd[0][0], usd[0][1] # [batch size, num_channels, fr, time]
-    input.unsqueeze_(0)
+    # [batch size, num_channels, fr, time]
+    
     predicted_list = []
     expected_list = []
     for i in range(len(usd)):
@@ -70,6 +71,10 @@ if __name__ == "__main__":
                                   class_mapping)
         predicted_list = predicted_list + [predicted]
         expected_list = expected_list + [expected]
-
-    print(f"Predicted: '{predicted_list}', expected: '{expected_list}'")
+    '''input, target = usd[0][0], usd[0][1]
+    input.unsqueeze_(0)
+    predicted, expected = predict(cnn, input, target,
+                                  class_mapping)'''
     
+    
+print(f"Predicted: '{predicted_list}', expected: '{expected_list}'")
