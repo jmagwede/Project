@@ -99,4 +99,4 @@ if __name__ == "__main__":
 
     # save model
     torch.save(cnn.state_dict(), "2000_Audio_Nn.pth")
-    print("Trained the Neural Network saved at Nn.pth")
+    print("Trained the Neural Network saved")

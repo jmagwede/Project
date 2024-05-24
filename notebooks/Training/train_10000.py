@@ -11,7 +11,7 @@ from cnn import CNNNetwork
 
 s3 = boto3.client('s3')
 BUCKET = '2307-01-acoustic-loggers-for-leak-detection-a'
-object_key = 'Development Layer/train_data.xlsx'
+object_key = 'Development Layer/train_10000_data.xlsx'
 
 response = s3.get_object(Bucket=BUCKET, Key=object_key)
 excel_data = response['Body'].read()
@@ -20,7 +20,7 @@ s3_location = BytesIO(excel_data)
     
 
 BATCH_SIZE = 5
-EPOCHS = 2
+EPOCHS = 4
 LEARNING_RATE = 0.001
 
 ANNOTATIONS_FILE = s3_location
@@ -28,7 +28,7 @@ ANNOTATIONS_FILE = s3_location
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 
-
+    
 def create_data_loader(train_data, batch_size):
     train_dataloader = DataLoader(train_data, batch_size=batch_size)
     return train_dataloader
@@ -37,7 +37,7 @@ def create_data_loader(train_data, batch_size):
 def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
     for input, target in data_loader:
         input, target = input.to(device), target.to(device)
-        
+
         # calculate loss
         prediction = model(input)
         loss = loss_fn(prediction, target)
@@ -73,6 +73,7 @@ if __name__ == "__main__":
         n_mels=64
     )
 
+    
     usd = AcousticSoundsData(ANNOTATIONS_FILE,
                             #AUDIO_DIR,
                             mel_spectrogram,
@@ -97,5 +98,5 @@ if __name__ == "__main__":
     train(cnn, train_dataloader, loss_fn, optimiser, device, EPOCHS)
 
     # save model
-    torch.save(cnn.state_dict(), "NeuralNetwork.pth")
-    print("Trained Neural Network net saved at NeuralNetwork.pth")
+    torch.save(cnn.state_dict(), "10000_Audio_Nn.pth")
+    print("Trained the Neural Network saved")
